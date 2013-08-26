@@ -100,8 +100,22 @@ class GameField
     /// </summary>
     private void InitMonstersStartPositions()
     {
-        monstersStartPositions.Clear();
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         //TODO search field for monsters and their positions in monstersStartPositions and clear them from field
+        for (int y = 0; y < fieldHeight; y++)
+        {
+            for (int x = 0; x < fieldWidth; x++)
+            {
+                if (fieldMatrix[x, y] == '☻')
+                {
+                    monstersStartPositions.Add(new FieldPoint(x, y));
+                }
+            }
+        }
+        monstersStartPositions.Clear();
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     }
 
     /// <summary>
@@ -111,7 +125,13 @@ class GameField
     public FieldPoint GetNewMonsterStartPosition()
     {
         //TODO return random one of monstersStartPositions
-        return new FieldPoint();
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        Random randomGenerator = new Random();
+        int randomMonster = randomGenerator.Next(0, monstersStartPositions.Count);
+
+        return new FieldPoint(monstersStartPositions[randomMonster].x,monstersStartPositions[randomMonster].y);
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     }
 
     /// <summary>
