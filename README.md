@@ -3,4 +3,4 @@ TelerikAcademyGameProjects
 
   * JustSnake
   * JustCars
-  * Team Project /bConsoleGamePacman/b
+  * Team Project <b>ConsoleGamePacman</b>
