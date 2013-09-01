@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-class ConsoleGamePacMan
+public class ConsoleGamePacMan
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// 
     static void Main()
     {
         // This size was choosen to fit in 1024x768 screen size
@@ -10,8 +14,9 @@ class ConsoleGamePacMan
         Console.Clear();
         Console.OutputEncoding = System.Text.Encoding.Unicode;
 
+        int level = 1;
         GameField gameField = new GameField(25, 23);
-        gameField.LoadLevel(1);
+        gameField.LoadLevel(level);
         gameField.DisplayField();
         gameField.DisplayGameData();
 
@@ -34,31 +39,58 @@ class ConsoleGamePacMan
                         Console.Clear();
                         return;
                     case ConsoleKey.LeftArrow:
-                        pacMan.MovingDirection = 'L';
+                        if (pacMan.MovingDirection == ' ')
+                        {
+                            pacMan.MovingDirection = 'L';
+                        }
+                        else
+                        {
+                            pacMan.NextMovingDirection = 'L';
+                        }
                         break;
                     case ConsoleKey.RightArrow:
-                        pacMan.MovingDirection = 'R';
+                        if (pacMan.MovingDirection == ' ')
+                        {
+                            pacMan.MovingDirection = 'R';
+                        }
+                        else
+                        {
+                            pacMan.NextMovingDirection = 'R';
+                        }
                         break;
                     case ConsoleKey.UpArrow:
-                        pacMan.MovingDirection = 'U';
+                        if (pacMan.MovingDirection == ' ')
+                        {
+                            pacMan.MovingDirection = 'U';
+                        }
+                        else
+                        {
+                            pacMan.NextMovingDirection = 'U';
+                        }
                         break;
                     case ConsoleKey.DownArrow:
-                        pacMan.MovingDirection = 'D';
+                        if (pacMan.MovingDirection == ' ')
+                        {
+                            pacMan.MovingDirection = 'D';
+                        }
+                        else
+                        {
+                            pacMan.NextMovingDirection = 'D';
+                        }
                         break;
                 }
             }
-            pacMan.MovePacMan();
+            pacMan.MovePacMan(gameField);
             foreach (Monster monster in monsters)
             {
-                monster.MoveMonster();
                 if (monster.IsMonsterOverPacMan(pacMan))
                 {
                     if (gameField.TakeOneLive())
                     {
-                        pacMan.ResetPacMan();
+                        pacMan.ResetPacMan(gameField, true);
                         foreach (var monsterToReset in monsters)
                         {
-                            monsterToReset.ResetMonster();
+                            monsterToReset.ResetMonster(gameField, true);
                         }
                         break;
                     }
@@ -67,6 +99,43 @@ class ConsoleGamePacMan
                         //TODO GAME OVER
                     }
                 }
+                monster.MoveMonster(gameField);
+                if (monster.IsMonsterOverPacMan(pacMan))
+                {
+                    if (gameField.TakeOneLive())
+                    {
+                        pacMan.ResetPacMan(gameField, true);
+                        foreach (var monsterToReset in monsters)
+                        {
+                            monsterToReset.ResetMonster(gameField, true);
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        //TODO GAME OVER
+                    }
+                }
+            }
+            if (gameField.EatCount <= 0)
+            {
+                level++;
+                if (level > 2)
+                {
+                    //TODO WIN
+                    break;
+                }
+
+                gameField.LoadLevel(level);
+                gameField.DisplayField();
+                gameField.DisplayGameData();
+
+                pacMan = new PacMan(gameField);
+                monsters.Clear();
+                monsters.Add(new Monster(gameField, ConsoleColor.Red));
+                monsters.Add(new Monster(gameField, ConsoleColor.Magenta));
+                monsters.Add(new Monster(gameField, ConsoleColor.Yellow));
+                monsters.Add(new Monster(gameField, ConsoleColor.Cyan));
             }
         }
 

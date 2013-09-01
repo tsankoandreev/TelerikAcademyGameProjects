@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-class GameField
+public class GameField
 {
     /// <summary>
     /// Structure to keep positions on the game field
@@ -27,13 +27,20 @@ class GameField
     private int lives = 5;
     private int level = 0;
     // symbols
-    private char pacManSymbol = (char)3;
-    private char monsterSymbol = (char)4;
+    private char pacManSymbol = (char)9786;
+    private char monsterSymbol = (char)9787;
+    private char livesSymbol = (char)3;
 
     private int fieldWidth = 0;
     private int fieldHeight = 0;
+
+    public int GetWidth { get { return fieldWidth; } }
+    public int GetHeight { get { return fieldHeight; } }
+
     private List<FieldPoint> monstersStartPositions = new List<FieldPoint>();
     private FieldPoint pacManStartPosition = new FieldPoint();
+
+    public int EatCount { get; set; }
 
     public GameField(int width, int height)
     {
@@ -69,6 +76,25 @@ class GameField
         // After load search field for start positions of PacMan and Monsters and clear them from field
         InitPacManStartPosition();
         InitMonstersStartPositions();
+        InitEatCount();
+    }
+
+    /// <summary>
+    /// Search for eating points and count them
+    /// </summary>
+    private void InitEatCount()
+    {
+        EatCount = 0;
+        for (int y = 0; y < fieldHeight; y++)
+        {
+            for (int x = 0; x < fieldWidth; x++)
+            {
+                if (this[x, y] == '.')
+                {
+                    EatCount++;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -77,21 +103,19 @@ class GameField
     /// </summary>
     private void InitPacManStartPosition()
     {
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        //TODO search field for PacMan and set it in pacManStartPosition
+        //search field for PacMan and set it in pacManStartPosition
         for (int y = 0; y < fieldHeight; y++)
         {
-            for (int x   = 0; x < fieldWidth; x++)
+            for (int x = 0; x < fieldWidth; x++)
             {
-                if (fieldMatrix[x, y] == '☺')
+                if (fieldMatrix[x, y] == pacManSymbol)
                 {
                     pacManStartPosition.x = x;
                     pacManStartPosition.y = y;
+                    fieldMatrix[x, y] = ' ';
                 }
             }
         }
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
     /// <summary>
@@ -100,21 +124,19 @@ class GameField
     /// </summary>
     private void InitMonstersStartPositions()
     {
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        //TODO search field for monsters and their positions in monstersStartPositions and clear them from field
+        monstersStartPositions.Clear();
+        //search field for monsters and their positions in monstersStartPositions and clear them from field
         for (int y = 0; y < fieldHeight; y++)
         {
             for (int x = 0; x < fieldWidth; x++)
             {
-                if (fieldMatrix[x, y] == '☻')
+                if (fieldMatrix[x, y] == monsterSymbol)
                 {
                     monstersStartPositions.Add(new FieldPoint(x, y));
+                    fieldMatrix[x, y] = ' ';
                 }
             }
         }
-        monstersStartPositions.Clear();
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     }
 
@@ -124,13 +146,11 @@ class GameField
     /// <returns>Random one of start positions of monster</returns>
     public FieldPoint GetNewMonsterStartPosition()
     {
-        //TODO return random one of monstersStartPositions
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Random randomGenerator = new Random();
+        //return random one of monstersStartPositions
+        Random randomGenerator = RandomWrapper.RandomClass;
         int randomMonster = randomGenerator.Next(0, monstersStartPositions.Count);
 
-        return new FieldPoint(monstersStartPositions[randomMonster].x,monstersStartPositions[randomMonster].y);
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        return new FieldPoint(monstersStartPositions[randomMonster].x, monstersStartPositions[randomMonster].y);
 
     }
 
@@ -153,7 +173,7 @@ class GameField
         {
             for (int x = 0; x < fieldWidth; x++)
             {
-                Console.Write(fieldMatrix[x, y]);
+                DisplayFieldAt(x, y);
             }
             Console.WriteLine();
         }
@@ -172,8 +192,9 @@ class GameField
         Console.ForegroundColor = ConsoleColor.Green;
         for (int i = 0; i < lives; i++)
         {
-            Console.Write(pacManSymbol + " ");
+            Console.Write(livesSymbol + " ");
         }
+
         Console.SetCursorPosition(fieldWidth + 1, 4);
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.Write("POINTS");
@@ -224,4 +245,31 @@ class GameField
         }
         return false;
     }
+
+    public void DisplayFieldAt(int x, int y)
+    {
+        if (this[x, y] == '#' || this[x, y] == '-')
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        Console.Write(this[x, y]);
+    }
+
+    public void EatAt(FieldPoint pos)
+    {
+        if (this[pos.x, pos.y] == '.')
+        {
+            points++;
+            EatCount--;
+            Console.SetCursorPosition(fieldWidth + 1, 5);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(points);
+            this[pos.x, pos.y] = ' ';
+        }
+    }
+
 }

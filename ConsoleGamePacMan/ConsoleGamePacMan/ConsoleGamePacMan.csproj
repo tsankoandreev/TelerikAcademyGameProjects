@@ -50,8 +50,12 @@
     <Compile Include="Monster.cs" />
     <Compile Include="PacMan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Levels\Level-2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Levels\Level-1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
