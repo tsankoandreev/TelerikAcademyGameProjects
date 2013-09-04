@@ -23,9 +23,14 @@ public class ConsoleGamePacMan
         PacMan pacMan = new PacMan(gameField);
         List<Monster> monsters = new List<Monster>();
         monsters.Add(new Monster(gameField, ConsoleColor.Red));
-        monsters.Add(new Monster(gameField, ConsoleColor.Magenta));
-        monsters.Add(new Monster(gameField, ConsoleColor.Yellow));
-        monsters.Add(new Monster(gameField, ConsoleColor.Cyan));
+        monsters.Add(new Monster(gameField, ConsoleColor.Red));
+        monsters.Add(new Monster(gameField, ConsoleColor.Red));
+        monsters.Add(new Monster(gameField, ConsoleColor.Red));
+
+        GameState gameState = GameState.WaitingToStart;
+        int counterDown = 4;
+
+        gameField.DisplayWaitingToStart();
 
         for (; ; )
         {
@@ -78,7 +83,37 @@ public class ConsoleGamePacMan
                             pacMan.NextMovingDirection = 'D';
                         }
                         break;
+                    case ConsoleKey.Spacebar:
+                        if (gameState == GameState.WaitingToStart)
+                        {
+                            counterDown = 4;
+                            gameState = GameState.Starting;
+                        }
+                        break;
                 }
+            }
+            if (gameState == GameState.WaitingToStart)
+            {
+                continue;
+            }
+            if (gameState == GameState.Starting)
+            {
+                gameField.DisplayStarting(ref counterDown, level);
+                if (counterDown == 0)
+                {
+                    gameField.DisplayField();
+                    gameField.DisplayGameData();
+                    gameState = GameState.Playing;
+                }
+                continue;
+            }
+            if (gameState == GameState.GameOver)
+            {
+                continue;
+            }
+            if (gameState == GameState.Win)
+            {
+                continue;
             }
             pacMan.MovePacMan(gameField);
             foreach (Monster monster in monsters)
@@ -96,7 +131,9 @@ public class ConsoleGamePacMan
                     }
                     else
                     {
-                        //TODO GAME OVER
+                        gameField.DisplayGameOver();
+                        gameState = GameState.GameOver;
+                        continue;
                     }
                 }
                 monster.MoveMonster(gameField);
@@ -113,7 +150,9 @@ public class ConsoleGamePacMan
                     }
                     else
                     {
-                        //TODO GAME OVER
+                        gameField.DisplayGameOver();
+                        gameState = GameState.GameOver;
+                        continue;
                     }
                 }
             }
@@ -122,8 +161,9 @@ public class ConsoleGamePacMan
                 level++;
                 if (level > 2)
                 {
-                    //TODO WIN
-                    break;
+                    gameField.DisplayWinner();
+                    gameState = GameState.Win;
+                    continue;
                 }
 
                 gameField.LoadLevel(level);
@@ -133,11 +173,24 @@ public class ConsoleGamePacMan
                 pacMan = new PacMan(gameField);
                 monsters.Clear();
                 monsters.Add(new Monster(gameField, ConsoleColor.Red));
-                monsters.Add(new Monster(gameField, ConsoleColor.Magenta));
-                monsters.Add(new Monster(gameField, ConsoleColor.Yellow));
-                monsters.Add(new Monster(gameField, ConsoleColor.Cyan));
+                monsters.Add(new Monster(gameField, ConsoleColor.Red));
+                monsters.Add(new Monster(gameField, ConsoleColor.Red));
+                monsters.Add(new Monster(gameField, ConsoleColor.Red));
+
+                counterDown = 4;
+                gameState = GameState.Starting;
             }
         }
 
+    }
+
+    enum GameState
+    {
+        WaitingToStart,
+        Playing,
+        Pause, //not implemented
+        Starting,
+        GameOver,
+        Win
     }
 }

@@ -42,6 +42,8 @@ public class GameField
 
     public int EatCount { get; set; }
 
+    DateTime lastCounterDownDateTime = DateTime.MinValue;
+
     public GameField(int width, int height)
     {
         this.fieldWidth = width;
@@ -185,15 +187,8 @@ public class GameField
     public void DisplayGameData()
     {
         ConsoleColor defaultColor = Console.ForegroundColor;
-        Console.SetCursorPosition(fieldWidth + 1, 1);
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write("LIVES");
-        Console.SetCursorPosition(fieldWidth + 1, 2);
-        Console.ForegroundColor = ConsoleColor.Green;
-        for (int i = 0; i < lives; i++)
-        {
-            Console.Write(livesSymbol + " ");
-        }
+
+        DisplayLives();
 
         Console.SetCursorPosition(fieldWidth + 1, 4);
         Console.ForegroundColor = ConsoleColor.Yellow;
@@ -233,6 +228,29 @@ public class GameField
     }
 
     /// <summary>
+    /// Display LIVES
+    /// </summary>
+    public void DisplayLives()
+    {
+        Console.SetCursorPosition(fieldWidth + 1, 1);
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write("LIVES");
+        Console.SetCursorPosition(fieldWidth + 1, 2);
+        Console.ForegroundColor = ConsoleColor.Green;
+        for (int i = 1; i <= 5; i++)
+        {
+            if (lives >= i)
+            {
+                Console.Write(livesSymbol + " ");
+            }
+            else
+            {
+                Console.Write("  ");
+            }
+        }
+    }
+
+    /// <summary>
     /// Take one live
     /// </summary>
     /// <returns>true if there is lives, false if no live to take</returns>
@@ -241,11 +259,17 @@ public class GameField
         if (lives > 0)
         {
             lives--;
+            DisplayLives();
             return true;
         }
         return false;
     }
 
+    /// <summary>
+    /// Display field on position
+    /// </summary>
+    /// <param name="x">x position</param>
+    /// <param name="y">y position</param>
     public void DisplayFieldAt(int x, int y)
     {
         if (this[x, y] == '#' || this[x, y] == '-')
@@ -259,6 +283,10 @@ public class GameField
         Console.Write(this[x, y]);
     }
 
+    /// <summary>
+    /// Eat dot and rise ponts
+    /// </summary>
+    /// <param name="pos"></param>
     public void EatAt(FieldPoint pos)
     {
         if (this[pos.x, pos.y] == '.')
@@ -272,4 +300,102 @@ public class GameField
         }
     }
 
+    /// <summary>
+    /// Display press space to start
+    /// </summary>
+    public void DisplayWaitingToStart()
+    {
+        int windowX = 8;
+        int windowY = 10;
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.SetCursorPosition(windowX, windowY);
+        Console.Write("########################");
+        Console.SetCursorPosition(windowX, windowY + 1);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 2);
+        Console.Write("# PRESS SPACE TO START #");
+        Console.SetCursorPosition(windowX, windowY + 3);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 4);
+        Console.Write("########################");
+    }
+
+    /// <summary>
+    /// Display staring countdown
+    /// </summary>
+    /// <param name="counter">number to display</param>
+    public void DisplayStarting(ref int counterDown, int level)
+    {
+        TimeSpan timeElapsedFromLastMove = DateTime.Now - lastCounterDownDateTime;
+        if (timeElapsedFromLastMove.TotalMilliseconds < 1000)
+        {
+            return;
+        }
+        lastCounterDownDateTime = DateTime.Now;
+
+        counterDown--;
+
+        int windowX = 8;
+        int windowY = 10;
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.SetCursorPosition(windowX, windowY);
+        Console.Write("########################");
+        Console.SetCursorPosition(windowX, windowY + 1);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 2);
+        Console.Write("# LEVEL {0} STARING IN {1} #", level, counterDown);
+        Console.SetCursorPosition(windowX, windowY + 3);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 4);
+        Console.Write("########################");
+
+        if (counterDown == 0)
+        {
+            lastCounterDownDateTime = DateTime.MinValue;
+        }
+    }
+
+    /// <summary>
+    /// Display GAME OVER
+    /// </summary>
+    public void DisplayGameOver()
+    {
+        int windowX = 8;
+        int windowY = 10;
+
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.SetCursorPosition(windowX, windowY);
+        Console.Write("########################");
+        Console.SetCursorPosition(windowX, windowY + 1);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 2);
+        Console.Write("#      GAME  OVER      #");
+        Console.SetCursorPosition(windowX, windowY + 3);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 4);
+        Console.Write("########################");
+    }
+
+    /// <summary>
+    /// Display YOU ARE WINNER
+    /// </summary>
+    public void DisplayWinner()
+    {
+        int windowX = 8;
+        int windowY = 10;
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.SetCursorPosition(windowX, windowY);
+        Console.Write("########################");
+        Console.SetCursorPosition(windowX, windowY + 1);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 2);
+        Console.Write("#    YOU ARE WINNER    #");
+        Console.SetCursorPosition(windowX, windowY + 3);
+        Console.Write("#                      #");
+        Console.SetCursorPosition(windowX, windowY + 4);
+        Console.Write("########################");
+    }
 }

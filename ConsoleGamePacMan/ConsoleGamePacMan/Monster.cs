@@ -35,7 +35,7 @@ public class Monster
     {
         // Do not move if time from last move is less than 150 milliseconds
         TimeSpan timeElapsedFromLastMove = DateTime.Now - lastMoveDateTime;
-        if (timeElapsedFromLastMove.Milliseconds < 150)
+        if (timeElapsedFromLastMove.TotalMilliseconds < 150)
         {
             return;
         }
